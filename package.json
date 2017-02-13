@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/Oliver-McGill-Labs/brute-bot"
   },
   "author": "Ryan McGill, Matt Oliver",
   "license": "ISC",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/Oliver-McGill-Labs/brute-bot"
   },
   "homepage": "",
   "dependencies": {

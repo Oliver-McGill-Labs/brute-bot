@@ -1,22 +1,20 @@
 // START HEROKU SETUP
 var express = require("express");
 var app = express();
-app.get('/', function(req, res){ res.send('The robot is happily running.'); });
+app.get('/', function(req, res){ res.send('Brute-bot is running.'); });
 app.listen(process.env.PORT || 5000);
 // END HEROKU SETUP
-
 
 var TwitterPackage = require('twitter');
 var random = require("random-js")();
 var KEYS = require('./env/api_keys')
 
 var config = {
-  me: 'TxLegeFactBot', // The authorized account with a list to retweet.
-  myList: 'txlegelist', // The list we want to retweet.
+  me: '<MY-ACCOUNT-HANDLE-HERE>', // The authorized account with a list to retweet.
+  myList: 'MY-LIST-HERE', // The list we want to retweet.
   regexFilter: '', // Accept only tweets matching this regex pattern.
   regexReject: '(RT|@)' // AND reject any tweets matching this regex pattern.
 }
-
 
 var secret = {
   consumer_key: KEYS.consumer_key || process.env.consumer_key,
@@ -28,7 +26,7 @@ var secret = {
 var Twitter = new TwitterPackage(secret);
 
 //-----------------------------------------------------------------------
-// List retweeter
+// List retweeter - BruteBot can retweet a member of a list whenever they tweet
 
 // Get the members of our list, and pass them into a callback function.
 function getListMembers(callback) {
@@ -90,13 +88,13 @@ function listen(listMembers) {
     tu.filter({
         follow: listMembers
     }, function(stream) {
-        console.log("[retweetBot] listening to stream");
+        console.log("[brutebotRetweet] listening to stream");
         stream.on('tweet', onTweet);
     });
 }
 
 // The application itself.
-// Use the tuiter node module to get access to twitter.
+// BruteBot uses the tuiter node module to get access to twitter for this portion of functionality.
 var tu = require('tuiter')(secret);
 
 // Run the application. The callback in getListMembers ensures we get our list
@@ -104,7 +102,7 @@ var tu = require('tuiter')(secret);
 getListMembers(listen);
 
 //-----------------------------------------------------------------------
-// Follow reply
+// Follow reply - BruteBot replies to someone whenever they follow it
 
 var stream = Twitter.stream('user');
 // Anytime someone follows me
@@ -116,12 +114,12 @@ function followed(event) {
   //get their twitter handler (screen name)
   var name = event.source.name,
   screenName = event.source.screen_name;
-  if (screenName === 'TXLegeFactBot' || name === 'TX Lege Fact') {
+  if (screenName === '<MY-ACCOUNT-HANDLE-HERE>' || name === '<MY-ACCOUNT-NAME-HERE>') {
     console.log('You can\'t follow yourself, Bot.')
   } else {
     console.log('I was followed by: ' + name + ' ' + screenName);
     // function that replies back to the user who followed
-    tweetNow('@' + screenName + ' Thank you for the follow. Find your rep with this tool: https://goo.gl/KNcqxU');
+    tweetNow('@' + screenName + ' Thank you for the follow.');
   }
 }
 
@@ -139,13 +137,13 @@ function tweetNow(tweetTxt) {
     }
   });
 }
+//-----------------------------------------------------------------------
+// Like tweet - BruteBot searches for random tweets that match your query and 'likes' them
 
-// Tweet Liker BOT====================
-
-// find a random tweet and 'favorite' it
-var favoriteTweet = function(){  
+// find a random tweet and 'like' it
+var likeTweet = function(){  
   var params = {
-      q: '#txlege' || '#SB4' || '#NoBanNoWall' || '#resist' || '#HereToStay' || '@KenPaxtonTX' || '@JohnCornyn' || '@TedCruz' || '@MillerForTX' || '@DrBuckingham' || '@DrSchwertner' || '@RepMattKrause' || '@KyleBiedermann' || '@DanPatrick' || '@RepMcCaul' || '@GovAbbott', // REQUIRED
+      q: '<YOUR-QUERY>', // REQUIRED
       result_type: 'recent',
       lang: 'en'
   }
@@ -153,7 +151,7 @@ var favoriteTweet = function(){
   Twitter.get('search/tweets', params, function(err,data){
 
     if(err) {
-        console.log('Error with finding the tweet to favorite');
+        console.log('Error with finding the tweet to like');
     } else {
     // find tweets
     var tweet = data.statuses;
@@ -161,9 +159,9 @@ var favoriteTweet = function(){
 
     // if random tweet exists
     if(typeof randomTweet != 'undefined'){
-      // Tell TWITTER to 'favorite'
+      // Tell TWITTER to 'like'
       Twitter.post('favorites/create', {id: randomTweet.id_str}, function(err, response){
-        // if there was an error while 'favorite'
+        // if there was an error while 'like'
         if(err){
           console.log('unable to like');
         }
@@ -175,13 +173,69 @@ var favoriteTweet = function(){
     }
   });
 }
-// grab & 'favorite' as soon as program is running...
-favoriteTweet();  
-// 'favorite' a tweet in every ______ interval
-setInterval(favoriteTweet, 10000);
+// grab & 'like' as soon as program is running...
+likeTweet();  
+// 'like' a tweet for a given interval; 3600000ms = 1 hour
+setInterval(favoriteTweet, 3600000);
 
-// function to generate a random tweet tweet
+// generate a random tweet to 'like'
 function ranDom (arr) {  
   var index = Math.floor(Math.random()*arr.length);
   return arr[index];
 };
+
+
+//
+
+
+  var dictumArray = [
+  "Add",
+  "your",
+  "sayings", 
+  "here"
+];
+
+var secret = {
+  consumer_key: KEYS.consumer_key,
+  consumer_secret: KEYS.consumer_secret,
+  access_token_key: KEYS.access_token_key,
+  access_token_secret: KEYS.access_token_secret
+  };
+  
+var TWEET_FREQUENCY_MIN = 50*1000; //min range of tweet frequency in milliseconds, using range in hopes to humanize the bot and not get banned
+var TWEET_FREQUENCY_MAX = 180*1000; //max range of tweet frequency in milliseconds, using range in hopes to humanize the bot and not get banned
+var LAST_TWEET = {};
+var PENDING_TWEET = {};
+
+var Twitter = new TwitterPackage(secret);
+
+Twitter.stream('statuses/filter', {track: '<YOUR-PARAM-HERE>'}, function(stream) {
+  stream.on('data', function(tweet) {
+    PENDING_TWEET = tweet;
+    console.log('[twitterbot] new tweet streamed!');
+  });
+  stream.on('error', function(error) {
+    console.log(error);
+  });
+});
+
+var RecursivePoster = function(){
+  setTimeout(function(){
+    if(LAST_TWEET.id_str == PENDING_TWEET.id_str){
+      console.log('[RecursivePoster] no new tweets detected, skipping');
+      return RecursivePoster();
+    }
+    var tweet = PENDING_TWEET;
+    var reply = "@" + tweet.user.screen_name + " " + random.pick(dictumArray);
+    Twitter.post('statuses/update', {status: reply},  function(error, tweetReply, response){
+      if(error){
+        console.log(error);
+      }
+      console.log('[RecursivePoster] posted reply:', tweetReply.text);
+      LAST_TWEET = tweet;
+      
+      RecursivePoster();
+    });  
+  }, random.integer(TWEET_FREQUENCY_MIN, TWEET_FREQUENCY_MAX));
+};
+RecursivePoster();
