@@ -1,2 +1,2 @@
 node_modules
-.env/api_keys.js
+env/api_keys.js
