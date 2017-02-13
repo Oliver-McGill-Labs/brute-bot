@@ -1,4 +1,4 @@
-// START HEROKU SETUP
+// SIMPLE EXPRESS SERVER IF DEPLOYING TO HEROKU
 var express = require("express");
 var app = express();
 app.get('/', function(req, res){ res.send('Brute-bot is running.'); });
@@ -16,6 +16,8 @@ var config = {
   regexReject: '(RT|@)' // AND reject any tweets matching this regex pattern.
 }
 
+
+// If deploying to Heroku, add API keys to Settings > Config Vars
 var secret = {
   consumer_key: KEYS.consumer_key || process.env.consumer_key,
   consumer_secret: KEYS.consumer_secret || process.env.consumer_secret,
@@ -102,7 +104,7 @@ var tu = require('tuiter')(secret);
 getListMembers(listen);
 
 //-----------------------------------------------------------------------
-// Follow reply - BruteBot replies to someone whenever they follow it
+// Follow reply - replies to someone whenever they follow
 
 var stream = Twitter.stream('user');
 // Anytime someone follows me
@@ -138,7 +140,7 @@ function tweetNow(tweetTxt) {
   });
 }
 //-----------------------------------------------------------------------
-// Like tweet - BruteBot searches for random tweets that match your query and 'likes' them
+// Like tweet - searches for random tweets that match your query and 'likes' them
 
 // find a random tweet and 'like' it
 var likeTweet = function(){  
@@ -185,29 +187,18 @@ function ranDom (arr) {
 };
 
 
-//
-
-
+// Array of sayings BruteBot should reply to specific queries with
   var dictumArray = [
   "Add",
   "your",
   "sayings", 
   "here"
 ];
-
-var secret = {
-  consumer_key: KEYS.consumer_key,
-  consumer_secret: KEYS.consumer_secret,
-  access_token_key: KEYS.access_token_key,
-  access_token_secret: KEYS.access_token_secret
-  };
   
-var TWEET_FREQUENCY_MIN = 50*1000; //min range of tweet frequency in milliseconds, using range in hopes to humanize the bot and not get banned
-var TWEET_FREQUENCY_MAX = 180*1000; //max range of tweet frequency in milliseconds, using range in hopes to humanize the bot and not get banned
+var TWEET_FREQUENCY_MIN = 20*1000; //min range of tweet frequency in milliseconds
+var TWEET_FREQUENCY_MAX = 180*1000; //max range of tweet frequency in milliseconds
 var LAST_TWEET = {};
 var PENDING_TWEET = {};
-
-var Twitter = new TwitterPackage(secret);
 
 Twitter.stream('statuses/filter', {track: '<YOUR-PARAM-HERE>'}, function(stream) {
   stream.on('data', function(tweet) {

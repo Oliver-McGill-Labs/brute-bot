@@ -4,7 +4,7 @@
   "description": "Node.js Twitter app",
   "main": "app.js",
   "scripts": {
-    "bot2": "node app.js",
+    "bot": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

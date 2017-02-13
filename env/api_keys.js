@@ -1,7 +1,7 @@
 
 module.exports = {
- consumer_key: 'YscZ7oCp7DiQMnCFA6t6SdDz4',
- consumer_secret: 'olJxzqDrolze1EKqEAwbJz6r8cH4uHlWDdN4cgNeOUB16DoNCj',
- access_token_key: '827932202243596288-u55a1xGmce07RF4MQH0opdvVNf6q3WM',
- access_token_secret: 'rLxcSwKqNmcwPwgPbjsey1AHAZqnsYK6kZ3mosodukGwx'
+ consumer_key: '2ELLindNc3Njhv2ekNthARDPq',
+ consumer_secret: 'p8XjvJUexcDimkBwJCPT6LtJGB9IhYHiKsUyyfJD5BomGlRv2A',
+ access_token_key: '827932202243596288-ytEuKKyPbEbsR39LZrcgXo2531KBqGq',
+ access_token_secret: 'Ivo8D9xC2SuC0pEGRlC8RcsP2suvlRafmJmyMSvtdD69P'
 };
