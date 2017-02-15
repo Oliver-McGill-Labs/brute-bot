@@ -6,7 +6,7 @@ A Node.js Twitter Application
 
 BruteBot is a Node.js Twitter application. Unlike other AI or NLP Twitter applications, BruteBot relies on conditional logic, hence the name.
 
-BruteBot's core 'RecursivePoster' function was written by Ryan McGill, with additional features added by Matt Oliver.
+Ryan McGill wrote BruteBot's core 'RecursivePoster' function, and additional features were added by Matt Oliver.
 
 Currently, BruteBot is programmed to:
 
