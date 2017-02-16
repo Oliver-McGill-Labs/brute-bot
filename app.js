@@ -230,3 +230,34 @@ var RecursivePoster = function(){
   }, random.integer(TWEET_FREQUENCY_MIN, TWEET_FREQUENCY_MAX));
 };
 RecursivePoster();
+
+//-------------------------------------------
+// Reply to a specific user every time they tweet
+
+
+// define the ID of the user we are interested in
+var userID = '<SOME-USER-ID-HERE>';
+
+// open a stream following events from that user ID
+Twitter.stream('statuses/filter', { follow: ( userID ) });
+
+  stream.on('tweet', function (tweet) { 
+    // compare the user ID inside the Tweet object we passed in
+    // to check it matches
+    if (tweet.user.id == userID) {
+      
+      console.log('[autoresponder] target just tweeted!');
+      
+      // function that replies back to the user who followed
+      var reply = '@' + tweet.user.screen_name + '<REPLY-GOES-HERE>';
+      
+        Twitter.post('statuses/update', {status: reply},  function(error, tweetReply, response){
+           if(error){
+            console.log(error);
+          }
+          console.log('[autoresponder] posted reply:', tweetReply.text);
+        })
+      
+     }
+  })
+
