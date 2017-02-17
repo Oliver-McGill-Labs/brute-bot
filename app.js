@@ -234,30 +234,38 @@ RecursivePoster();
 //-------------------------------------------
 // Reply to a specific user every time they tweet
 
-
 // define the ID of the user we are interested in
-var userID = '<SOME-USER-ID-HERE>';
+var userID = '<SOME-USER-ID>';
+
+var id_str, screen_name;
+
 
 // open a stream following events from that user ID
-Twitter.stream('statuses/filter', { follow: ( userID ) });
+Twitter.stream('statuses/filter', {follow: userID}, function(stream) {
+  console.log('[autoresponder] Bot started looking for tweets by ' + userID + '.');
+  stream.on('data', function(tweet) {
 
-  stream.on('tweet', function (tweet) { 
-    // compare the user ID inside the Tweet object we passed in
+  // compare the user ID inside the Tweet object we passed in
     // to check it matches
-    if (tweet.user.id == userID) {
-      
-      console.log('[autoresponder] target just tweeted!');
-      
-      // function that replies back to the user who followed
-      var reply = '@' + tweet.user.screen_name + '<REPLY-GOES-HERE>';
-      
-        Twitter.post('statuses/update', {status: reply},  function(error, tweetReply, response){
-           if(error){
-            console.log(error);
-          }
-          console.log('[autoresponder] posted reply:', tweetReply.text);
-        })
-      
-     }
-  })
+  if(userID == '827932202243596288') { 
+        console.log('[autoresponder] ' + userID + ' just tweeted: ' + tweet.text); 
+        id_str = tweet.id_str;
+        screen_name = tweet.user.screen_name;
+
+        var reply = '@' + screen_name + ' I\'m trying out an automated reply function on a bot I\'ve built';
+        
+        Twitter.post('statuses/update', {in_reply_to_status_id: id_str,
+        status: reply},
+        function(error, tweet, response){
+            if(error) throw error;
+            console.log('[autoresponder] you posted reply:', tweet.text);  
+        });
+    }
+   })
+
+  stream.on('error', function(error) {
+    throw error;
+  });
+});
+
 
