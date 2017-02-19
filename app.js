@@ -238,34 +238,33 @@ RecursivePoster();
 var userID = '<SOME-USER-ID>';
 
 var id_str, screen_name;
-
-
 // open a stream following events from that user ID
-Twitter.stream('statuses/filter', {follow: userID}, function(stream) {
+  Twitter.stream('statuses/filter', {follow: userID}, function(stream) {
   console.log('[autoresponder] Bot started looking for tweets by ' + userID + '.');
   stream.on('data', function(tweet) {
 
-  // compare the user ID inside the Tweet object we passed in
-    // to check it matches
-  if(userID == '827932202243596288') { 
+  // if(userID == '832813975658229761') { 
+      if(tweet.user.id == userID) {
         console.log('[autoresponder] ' + userID + ' just tweeted: ' + tweet.text); 
         id_str = tweet.id_str;
         screen_name = tweet.user.screen_name;
 
-        var reply = '@' + screen_name + ' I\'m trying out an automated reply function on a bot I\'ve built';
+        var reply = '@' + screen_name + ' ' + random.pick(dictumArray);
         
-        Twitter.post('statuses/update', {in_reply_to_status_id: id_str,
-        status: reply},
-        function(error, tweet, response){
+        if (screen_name !== '<YOUR-USER-ID>'){
+           Twitter.post('statuses/update', {in_reply_to_status_id: id_str,
+            status: reply},
+            function(error, tweet, response){
             if(error) throw error;
-            console.log('[autoresponder] you posted reply:', tweet.text);  
-        });
+            console.log('[autoresponder] posted reply:', tweet.text);  
+          });
+        }
+        
     }
    })
-
-  stream.on('error', function(error) {
+   
+     stream.on('error', function(error) {
     throw error;
   });
 });
-
 
